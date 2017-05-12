@@ -135,6 +135,23 @@ app.factory('projectsService', ['$http', '$q', function ($http, $q) {
         });
     };
 
+    var getChatMessages = function (groupId) {
+        return $http.get(serviceBase + 'api/Messages/Chat?groupId=' + groupId)
+            .then(function (results) {
+                return results;
+            });
+    };
+
+    var sendChatMessage = function (userId, groupId, message) {
+        return $http.get(serviceBase + 'api/Messages/Send?userId=' + userId + '&groupId=' + groupId
+            + '&message=' + message)
+            .then(function (results) {
+                return results;
+            });
+    };
+
+
+
 
 
 
@@ -147,6 +164,8 @@ app.factory('projectsService', ['$http', '$q', function ($http, $q) {
     ordersServiceFactory.addProject = addProject;
     ordersServiceFactory.getSkills = getSkills;
     ordersServiceFactory.getMessages = getMessages;
+    ordersServiceFactory.sendChatMessage = sendChatMessage;
+    ordersServiceFactory.getChatMessages = getChatMessages;
 
     return ordersServiceFactory;
 

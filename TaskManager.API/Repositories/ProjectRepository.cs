@@ -112,6 +112,16 @@ namespace AngularJSAuthentication.API.Repositories
         {
             return ctx.ProjectMessages.Where(m => m.GroupId == groupId).ToList();
         }
+
+        public int Me()
+        {
+            return 0;
+        }
+
+        public List<TaskSkill> GeTaskSkills(int taskId)
+        {
+            return ctx.TaskSkills.Where(t => t.TaskId == taskId).ToList();
+        }
     }
 
     public class ProjectContext : AuthContext
@@ -143,8 +153,10 @@ namespace AngularJSAuthentication.API.Repositories
 
         public string Name { get; set; }
 
-        public List<Skill> Skills { get; set; }
+        public virtual Project Project { get; set; }
+        public virtual User User { get; set; }
 
+        public List<Skill> Skills { get; set; }
     }
 
 
@@ -152,7 +164,11 @@ namespace AngularJSAuthentication.API.Repositories
     {
         public int Id { get; set; }
         public int ProjectId { get; set; }
+
         public string UserId { get; set; }
+        [JsonIgnore]
+        public virtual IdentityUser User { get; set; }
+        public virtual Project Project { get; set; }
     }
 
 
@@ -164,6 +180,7 @@ namespace AngularJSAuthentication.API.Repositories
         public String UserId { get; set; }
         //[ForeignKey("Project")]
         public int ProjectId { get; set; }
+
     }
 
 
@@ -178,10 +195,13 @@ namespace AngularJSAuthentication.API.Repositories
     {
         [Key]
         public int Id { get; set; }
-
+        [ForeignKey("Skill")]
         public int SkillId { get; set; }
 
         public string UserId { get; set; }
+
+        public virtual Skill Skill { get; set; }
+        public virtual User User { get; set; }
     }
 
     public class Task
@@ -216,5 +236,12 @@ namespace AngularJSAuthentication.API.Repositories
         // [JsonIgnore]
         public virtual Skill Skill { get; set; }
 
+    }
+
+    public class User
+    {
+        [Key]
+        public string Id { get; set; }
+        public string Name { get; set; }
     }
 }

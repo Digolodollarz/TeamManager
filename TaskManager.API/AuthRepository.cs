@@ -33,6 +33,7 @@ namespace AngularJSAuthentication.API
 
             var result = await _userManager.CreateAsync(user, userModel.Password);
 
+
             return result;
         }
 

@@ -24,5 +24,32 @@ namespace AngularJSAuthentication.API.Controllers
         {
             return projectRepository.GetGroupMessages(2);
         }
+
+        [Route("Chat")]
+        [HttpGet]
+        public List<ChatMessage> GetForGroup(int groupId)
+        {
+            return projectRepository.GetGroupMessages(groupId);
+        }
+
+        [Route("Latest")]
+        [HttpGet]
+        public List<ChatMessage> GetLatest()
+        {
+            return projectRepository.GetLatest();
+        }
+
+        [Route("Send")]
+        [HttpPost]
+        public IHttpActionResult Send(string userId, int groupId, string message)
+        {
+            if (projectRepository.AddMessage(new ChatMessage
+            {
+                SenderId = userId,
+                GroupId = groupId,
+                Text = message
+            }) > 0) return Ok();
+            return BadRequest();
+        }
     }
 }

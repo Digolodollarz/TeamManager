@@ -37,5 +37,28 @@ app.controller('projectsController', ['$scope', 'projectsService', '$rootScope',
             });
     }
 
+    $scope.showChat = function(message) {
+        projectsService.getMessages(message.groupId).then(function (results) {
+            $scope.messages = results.data;
+            console.log($scope.messages);
+        }, function (error) {
+            //alert(error.data.message);
+        });
+    }
+
+    $scope.sendMessage = function (groupId, message) {
+        projectsService.sendChatMessage("userme", groupId, message).then(function (results) {
+            $scope.messages = results.data;
+            console.log($scope.messages);
+        }, function (error) {
+            //alert(error.data.message);
+        });
+    }
+
+
+    $scope.assignProject = function(project) {
+        console.log("User Asigned", project);
+
+    }
     
 }]);

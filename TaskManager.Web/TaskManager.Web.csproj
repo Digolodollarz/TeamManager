@@ -63,7 +63,6 @@
     <Content Include="app\controllers\homeController.js" />
     <Content Include="app\controllers\indexController.js" />
     <Content Include="app\controllers\loginController.js" />
-    <Content Include="app\controllers\MessagesController.js" />
     <Content Include="app\controllers\ordersController.js" />
     <Content Include="app\controllers\projectsController.js" />
     <Content Include="app\controllers\signupController.js" />
