@@ -1,0 +1,21 @@
+﻿<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-header">
+            User Skills : {{user.Name}}
+        </h1>
+    </div>
+    <!-- /.col-lg-12 -->
+    
+    <form class="form-inline">
+        <div class="form-group">
+            <label for="email">Name Of Quality</label>
+            <input type="text" class="form-control" id="email">
+        </div>
+       
+        <button ng-click="addSkill();" type="button" class="btn btn-default">Add Skill</button>
+    </form>
+
+    Skill held by User:
+    <p ng-repeat="skill in skills">{{skill.Name}}</p>
+
+</div>

@@ -1,0 +1,16 @@
+﻿<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-header">
+            The Agile Team Management Project
+        </h1>
+    </div>
+    <!-- /.col-lg-12 -->
+    <div class="col-md-2">&nbsp;</div>
+    <div class="col-md-8">
+        <h2>Messages</h2>
+        <div ng-repeat="message in messages" >
+            <p>{{message.senderId}}</p>
+            <p>{{message.Text}}</p>
+        </div>
+    </div>
+</div>
