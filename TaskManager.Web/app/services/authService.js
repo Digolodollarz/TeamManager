@@ -7,7 +7,8 @@ app.factory('authService', ['$http', '$q', 'localStorageService', function ($htt
 
     var _authentication = {
         isAuth: false,
-        userName : ""
+        userName: "",
+        userId: ""
     };
 
     var _saveRegistration = function (registration) {
@@ -33,6 +34,8 @@ app.factory('authService', ['$http', '$q', 'localStorageService', function ($htt
             _authentication.isAuth = true;
             _authentication.userName = loginData.userName;
 
+            console.log("access tokene", response);
+
             deferred.resolve(response);
 
         }).error(function (err, status) {
@@ -56,8 +59,7 @@ app.factory('authService', ['$http', '$q', 'localStorageService', function ($htt
     var _fillAuthData = function () {
 
         var authData = localStorageService.get('authorizationData');
-        if (authData)
-        {
+        if (authData) {
             _authentication.isAuth = true;
             _authentication.userName = authData.userName;
         }

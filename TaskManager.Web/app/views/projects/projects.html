@@ -14,7 +14,7 @@
     </div>
     <div class="col-md-8">
         <h2>{{project.name}}</h2>
-        <div ng-repeat="user in eligibleUsers">
+        <div ng-repeat="user in project.eligibleUsers">
             <span>{{user.name}}</span>
             <span>{{user.Text}}</span>
             <button ng-click="addUser()" class="btn-primary btn">Select User</button>

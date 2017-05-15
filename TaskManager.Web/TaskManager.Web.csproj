@@ -75,11 +75,11 @@
     <Content Include="app\views\home.html" />
     <Content Include="app\views\login.html" />
     <Content Include="app\views\messages.html" />
-    <Content Include="app\views\orders.html" />
     <Content Include="app\views\projects\allocate-project.html" />
     <Content Include="app\views\projects\create-project.html" />
     <Content Include="app\views\projects\project.html" />
     <Content Include="app\views\projects\projects.html" />
+    <Content Include="app\views\projects\tasks.html" />
     <Content Include="app\views\signup.html" />
     <Content Include="app\views\users\all-users.html" />
     <Content Include="app\views\users\create-user.html" />

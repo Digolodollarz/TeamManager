@@ -7,6 +7,8 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
+using AngularJSAuthentication.API.Repositories;
+using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace AngularJSAuthentication.API.Controllers
 {
@@ -26,20 +28,23 @@ namespace AngularJSAuthentication.API.Controllers
         [Route("Register")]
         public async Task<IHttpActionResult> Register(UserModel userModel)
         {
-             if (!ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-             IdentityResult result = await _repo.RegisterUser(userModel);
+            IdentityResult result = await _repo.RegisterUser(userModel);
 
-             IHttpActionResult errorResult = GetErrorResult(result);
+            IHttpActionResult errorResult = GetErrorResult(result);
 
-             if (errorResult != null)
-             {
-                 return errorResult;
-             }
-
+            if (errorResult != null)
+            {
+                return errorResult;
+            }
+            IdentityUser user = _repo.FindUserByUserNameAndKey(userModel.UserName, userModel.Password);
+            ProjectContext projectContext = new ProjectContext();
+            projectContext.Members.Add(new Member {IdentityUserId = user.Id,Name = user.UserName});
+            projectContext.SaveChanges();
              return Ok();
         }
 

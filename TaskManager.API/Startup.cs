@@ -4,6 +4,7 @@ using Microsoft.Owin.Security.OAuth;
 using Owin;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Web;
 using System.Web.Http;
@@ -19,10 +20,11 @@ namespace AngularJSAuthentication.API
             HttpConfiguration config = new HttpConfiguration();
 
             ConfigureOAuth(app);
-
+            //Database.SetInitializer(new ProjectContextInitializer());
             WebApiConfig.Register(config);
             app.UseCors(Microsoft.Owin.Cors.CorsOptions.AllowAll);
             app.UseWebApi(config);
+            //InitDummies.Initialise();
 
         }
 
@@ -43,5 +45,7 @@ namespace AngularJSAuthentication.API
             app.UseOAuthBearerAuthentication(new OAuthBearerAuthenticationOptions());
 
         }
+
+        
     }
 }

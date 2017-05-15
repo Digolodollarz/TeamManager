@@ -15,4 +15,18 @@ namespace AngularJSAuthentication.API
 
         }
     }
+
+    public class ProjectContextInitializer : DropCreateDatabaseAlways<AuthContext>
+
+    {
+
+        protected override void Seed(AuthContext context)
+
+        {
+
+            base.Seed(context);
+
+        }
+
+    }
 }

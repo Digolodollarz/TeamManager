@@ -18,18 +18,18 @@ namespace AngularJSAuthentication.API.Controllers
         {
             projectRepository = new ProjectRepository();
         }
-        [Route("")]
-        [HttpGet]
-        public List<ChatMessage> Get()
-        {
-            return projectRepository.GetGroupMessages(2);
-        }
+        //[Route("")]
+        //[HttpGet]
+        //public List<ChatMessage> Get()
+        //{
+        //    return projectRepository.GetGroupMessages(2);
+        //}
 
         [Route("Chat")]
         [HttpGet]
-        public List<ChatMessage> GetForGroup(int groupId)
+        public List<ChatMessage> GetForGroup(int projectId)
         {
-            return projectRepository.GetGroupMessages(groupId);
+            return projectRepository.GetGroupMessages(projectId);
         }
 
         [Route("Latest")]
@@ -41,14 +41,9 @@ namespace AngularJSAuthentication.API.Controllers
 
         [Route("Send")]
         [HttpPost]
-        public IHttpActionResult Send(string userId, int groupId, string message)
+        public IHttpActionResult Send(int projectId, string message)
         {
-            if (projectRepository.AddMessage(new ChatMessage
-            {
-                SenderId = userId,
-                GroupId = groupId,
-                Text = message
-            }) > 0) return Ok();
+            projectRepository.SendMessage(projectId, message);
             return BadRequest();
         }
     }

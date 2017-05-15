@@ -33,6 +33,12 @@ app.config(function ($routeProvider) {
         templateUrl: "/app/views/projects/project.html" //TODO: resolve this shit
     });
 
+
+    $routeProvider.when("/projectTasks/:projectId", {
+        controller: "projectsController",
+        templateUrl: "/app/views/projects/project.html" //TODO: resolve this shit
+    });
+
     $routeProvider.when("/allocateProject", {
         controller: "projectsController",
         templateUrl: "/app/views/projects/allocate-project.html"

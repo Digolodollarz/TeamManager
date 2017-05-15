@@ -11,10 +11,10 @@
             <input type="text" class="form-control" id="usr" ng-model="newProject.projectName">
         </div>
         
-        Skills Required
+        <!--Skills Required
         <div class="checkbox" ng-repeat="skill in skills">
-            <label><input type="checkbox" value="">Option 1</label>
-        </div>
+            <label><input type="checkbox" value="">{{skill.name}}</label>
+        </div>-->
         
         <button ng-click="addProject();">Create</button>
     </form>

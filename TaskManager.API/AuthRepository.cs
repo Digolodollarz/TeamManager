@@ -30,17 +30,51 @@ namespace AngularJSAuthentication.API
             {
                 UserName = userModel.UserName
             };
+            try
+            {
 
-            var result = await _userManager.CreateAsync(user, userModel.Password);
+                var result = await _userManager.CreateAsync(user, userModel.Password);
+                return result;
+            }
+            catch (Exception ex)
+            {
 
+                throw ex;
+            }
 
-            return result;
+            
         }
 
         public async Task<IdentityUser> FindUser(string userName, string password)
         {
             IdentityUser user = await _userManager.FindAsync(userName, password);
 
+            return user;
+        }
+
+
+        public IdentityResult CreateUser(UserModel userModel)
+        {
+            IdentityUser user = new IdentityUser
+            {
+                UserName = userModel.UserName
+            };
+
+            var result = _userManager.Create(user, userModel.Password);
+
+
+            return result;
+        }
+
+        public IdentityUser FindUserByUserNameAndKey(string userName, string password)
+        {
+            IdentityUser user = _userManager.Find(userName, password);
+            return user;
+        }
+
+        public IdentityUser FindUserByUserName(string userName)
+        {
+            IdentityUser user = _userManager.FindByName(userName);
             return user;
         }
 

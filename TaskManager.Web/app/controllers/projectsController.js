@@ -7,22 +7,22 @@ app.controller('projectsController', ['$scope', 'projectsService', '$rootScope',
     projectsService.getAllProjects().then(function (results) {
 
         $scope.projects = results.data;
-        console.log(results);
-        console.log($scope.projects);
+        $scope.allocationProjects = results.data;
+        console.log("projects: ", $scope.projects);
     }, function (error) {
         //alert(error.data.message);
     });
 
     projectsService.getSkills().then(function (results) {
         $scope.skills = results.data;
-        console.log(results);
+        console.log("Skills",results);
     }, function (error) {
         //alert(error.data.message);
     });
 
     projectsService.getMessages().then(function (results) {
         $scope.messages = results.data;
-        console.log($scope.messages);
+        console.log("messages",$scope.messages);
     }, function (error) {
         //alert(error.data.message);
     });
@@ -40,7 +40,7 @@ app.controller('projectsController', ['$scope', 'projectsService', '$rootScope',
     $scope.showChat = function(message) {
         projectsService.getMessages(message.groupId).then(function (results) {
             $scope.messages = results.data;
-            console.log($scope.messages);
+            console.log("messages",$scope.messages);
         }, function (error) {
             //alert(error.data.message);
         });
@@ -55,10 +55,31 @@ app.controller('projectsController', ['$scope', 'projectsService', '$rootScope',
         });
     }
 
+    $scope.addUserSkill = function(userId, skillId) {
+        projectsService.addUserSkill(userId, skillId).then(function() {});
+    }
+
+    $scope.addProjectSkill = function (userId, skillId) {
+        projectsService.addUserSkill(userId, skillId).then(function () { });
+    }
+
+    $scope.createSkill = function () {
+        projectsService.addSkill($scope.newSkill.skillName).then(function () {
+            projectsService.getSkills().then(function (results) {
+                $scope.skills = results.data;
+                console.log("Skills", results);
+            }, function (error) {
+                //alert(error.data.message);
+            });
+        });
+    }
 
     $scope.assignProject = function(project) {
-        console.log("User Asigned", project);
-
+        $scope.allocationProject = project;
+        projectsService.getEligibleUsers(project.Id).then(function(result) {
+                $scope.eligibleUsers = result.data;
+            },
+            function(error) { console.log(error); });
     }
     
 }]);

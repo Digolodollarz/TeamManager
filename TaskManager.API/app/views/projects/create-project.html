@@ -1,0 +1,22 @@
+﻿<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-header">
+            Add Projects
+        </h1>
+    </div>
+    <!-- /.col-lg-12 -->
+    <form>
+        <div class="form-group">
+            <label for="usr">Project Name</label>
+            <input type="text" class="form-control" id="usr" ng-model="newProject.projectName">
+        </div>
+        
+        <!--Skills Required
+        <div class="checkbox" ng-repeat="skill in skills">
+            <label><input type="checkbox" value="">{{skill.name}}</label>
+        </div>-->
+        
+        <button ng-click="addProject();" class="btn btn-lg btn-primary">Create</button>
+    </form>
+
+</div>

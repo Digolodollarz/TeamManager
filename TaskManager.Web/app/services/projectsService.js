@@ -9,85 +9,6 @@ app.factory('projectsService', ['$http', '$q', function ($http, $q) {
         return $http.get(serviceBase + 'api/projects').then(function (results) {
             return results;
         });
-        //var deferred = $q.defer();
-        //var data = [
-        //    {
-        //        Name: "Writing Code",
-        //        Status: "In Progress",
-        //        Manager: "Le Super Man",
-        //        Members: [
-        //        {
-        //            Name: "Le Batman", Id: "0x14"
-        //        },
-        //        {
-        //            Name: "Le Batman", Id: "0x14"
-        //        },
-        //        {
-        //            Name: "Le Batman", Id: "0x14"
-        //        },
-        //        {
-        //            Name: "Le Batman", Id: "0x14"
-        //        }]
-        //    }, {
-        //        Name: "Writing Code",
-        //        Status: "In Progress",
-        //        Manager: "Le Super Man",
-        //        Members: [
-        //        {
-        //            Name: "Le Batman", Id: "0x14"
-        //        },
-        //        {
-        //            Name: "Le Batman", Id: "0x14"
-        //        },
-        //        {
-        //            Name: "Le Batman", Id: "0x14"
-        //        },
-        //        {
-        //            Name: "Le Batman", Id: "0x14"
-        //        }]
-        //    }, {
-        //        Name: "Writing Code",
-        //        Status: "In Progress",
-        //        Manager: "Le Super Man",
-        //        Members: [
-        //        {
-        //            Name: "Le Batman", Id: "0x14"
-        //        },
-        //        {
-        //            Name: "Le Batman", Id: "0x14"
-        //        },
-        //        {
-        //            Name: "Le Batman", Id: "0x14"
-        //        },
-        //        {
-        //            Name: "Le Batman", Id: "0x14"
-        //        }]
-        //    }, {
-        //        Name: "Writing Code",
-        //        Status: "In Progress",
-        //        Manager: "Le Super Man",
-        //        Members: [
-        //        {
-        //            Name: "Le Batman", Id: "0x14"
-        //        },
-        //        {
-        //            Name: "Le Batman", Id: "0x14"
-        //        },
-        //        {
-        //            Name: "Le Batman", Id: "0x14"
-        //        },
-        //        {
-        //            Name: "Le Batman", Id: "0x14"
-        //        }]
-        //    }
-        //];
-        //var results={data:data}
-        //setTimeout((function () {
-        //    setTimeout(function () {
-        //        deferred.resolve(results);
-        //    }, 1000);
-        //}));
-        //return deferred.promise;
     };
 
     var addProject = function (data) {
@@ -102,18 +23,18 @@ app.factory('projectsService', ['$http', '$q', function ($http, $q) {
         return $http.post(serviceBase + 'api/Projects/Create?projectName=' + data.projectName, { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } });
     };
 
-    var addUserToProject = function () {
-
-        return $http.get(serviceBase + 'api/projects').then(function (results) {
-            return results;
-        });
+    var addUserToProject = function (projectId, memberId) {
+        return $http.post(serviceBase + 'api/Projects/AddUser?projectId=' + projectId + '&memberId=' + memberId,
+            { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } });
     };
 
-    var getProjectRequirements = function () {
+    var addTaskToProject = function (projectId, taskName) {
+        return $http.post(serviceBase + 'api/Projects/AddTask?projectId=' + projectId + '&taskName=' + taskName,
+            { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } });
+    };
 
-        return $http.get(serviceBase + 'api/projects').then(function (results) {
-            return results;
-        });
+    var getProjectRequirements = function (projectId) {
+        return $http.get(serviceBase + 'api/Projects/Tasks&projectId='+projectId);
     };
 
 
@@ -123,8 +44,42 @@ app.factory('projectsService', ['$http', '$q', function ($http, $q) {
         });
     };
 
-    var getProject = function () {
-        return $http.get(serviceBase + 'api/Projects').then(function (results) {
+    var addSkill = function (skillName) {
+        return $http.post(serviceBase + 'api/Projects/CreateSkill?skillName=' + skillName).then(function (results) {
+            return results;
+        });
+    };
+
+
+    var addTaskSkill = function (projectId,taskId, skillId) {
+        return $http.post(serviceBase + 'api/Projects/AddTaskSkill?projectId=' + projectId
+            + '&taskId=' + taskId + '&skillId=' + skillId)
+            .then(function (results) {
+            return results;
+        });
+    };
+
+    var addTask= function (projectId, skillId) {
+        return $http.post(serviceBase + 'api/Projects/AddTaskSkill?taskId=' + taskId + '&skillId=' + skillId)
+            .then(function (results) {
+                return results;
+            });
+    };
+
+    var getProjectSkills = function (projectId) {
+        return $http.get(serviceBase + 'api/Projects/ProjectSkills?projectId=' + projectId).then(function (results) {
+            return results;
+        });
+    };
+
+
+
+    var getEligibleUsers = function (projectId) {
+        return $http.get(serviceBase + 'api/Projects/GetEleigibleUsers?projectId=' + projectId);
+    };
+
+    var getProject = function (projectId) {
+        return $http.get(serviceBase + 'api/Projects/Project?projectId=' + projectId).then(function (results) {
             return results;
         });
     };
@@ -152,20 +107,26 @@ app.factory('projectsService', ['$http', '$q', function ($http, $q) {
 
 
 
-
+    
 
 
     ordersServiceFactory.getAllProjects = getAllProjects;
     ordersServiceFactory.getProjectRequirements = getProjectRequirements;
     ordersServiceFactory.getProject = getProject;
+    ordersServiceFactory.getEligibleUsers = getEligibleUsers;
     ordersServiceFactory.addUserToProject = addUserToProject;
     ordersServiceFactory.updateProject = updateProject;
     ordersServiceFactory.deleteProject = deleteProject;
     ordersServiceFactory.addProject = addProject;
-    ordersServiceFactory.getSkills = getSkills;
+    ordersServiceFactory.getSkills = getSkills; 
+    ordersServiceFactory.addSkill = addSkill;
+    ordersServiceFactory.getProjectSkills = getProjectSkills;
     ordersServiceFactory.getMessages = getMessages;
     ordersServiceFactory.sendChatMessage = sendChatMessage;
     ordersServiceFactory.getChatMessages = getChatMessages;
+    ordersServiceFactory.addTaskSkill = addTaskSkill;
+    ordersServiceFactory.addTask= addTask;
+    ordersServiceFactory.addTaskToProject = addTaskToProject;
 
     return ordersServiceFactory;
 

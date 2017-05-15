@@ -1,4 +1,72 @@
 ﻿<div class="row">
+
+    <div class="col-lg-12">
+        <h1 class="page-header">
+            All Projects
+        </h1>
+    </div>
+    <div class="col-md-4">
+        <h2>Projects</h2>
+        <form class="form-inline">
+            <div class="form-group">
+                <label>Find Project</label>
+                <input class="form-control" type="text" value="" ng-model="newMessage" />
+                <!--s<button class="btn btn-primary">Send</button>-->
+            </div>
+        </form>
+        <div ng-repeat="project in allocationProjects" ng-click="assignProject(project);">
+            <h3>{{project.name}}</h3>
+            <p>{{project.status}}</p>
+        </div>
+    </div>
+    <div class="col-md-8" ng-if="allocationProject && !manageProductSkills">
+        <h2>{{allocationProject.name}}</h2>
+        <button class="btn btn-primary">Add Skill</button>
+        <div ng-repeat="user in allocationProject.eligibleUsers">
+            <span>{{user.name}}</span>
+            <span>{{user.Text}}</span>
+            <button ng-click="addUser(user)" class="btn-primary btn">Select User</button>
+        </div>
+    </div>
+
+    <div class="col-md-8" ng-if="allocationProject && !!manageProductSkills">
+        <h2>{{allocationProject.name}}</h2>
+        <div ng-repeat="skill in allocationProject.skills">
+            <span>{{skill.name}}</span>
+            <span>{{skill.Text}}</span>
+            <button ng-click="addTaskToProject()" class="btn-primary btn">Add Task</button>
+        </div>
+    </div>
+
+
+
+    <!--Skills Required
+    <div class="checkbox" ng-repeat="skill in skills">
+        <label><input type="checkbox" value="">{{skill.name}}</label>
+    </div>-->
+
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="row">
+    <div class="c
     <div class="col-lg-12">
         <h1 class="page-header">
             Allocate Projects

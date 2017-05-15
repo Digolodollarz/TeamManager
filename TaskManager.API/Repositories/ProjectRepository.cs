@@ -5,122 +5,131 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity;
 using System.Linq;
 using System.Web;
-using AngularJSAuthentication.API.Models;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
-using Newtonsoft.Json;
 
 namespace AngularJSAuthentication.API.Repositories
 {
     public class ProjectRepository
     {
         private ProjectContext ctx;
-        private String currentUserId;
+        //private String currentUserId;
+        private Member CurrentMember;
 
         public ProjectRepository()
         {
             this.ctx = new ProjectContext();
-            this.currentUserId = System.Web.HttpContext.Current.User.Identity.GetUserId();
+
+            //var user = System.Web.HttpContext.Current.User.Identity;
+            //this.currentUserId = user.GetUserId();
+            //if (currentUserId == null)
+            //    this.currentUserId = "diggie";
+            this.CurrentMember = ctx.Members.FirstOrDefault(m => m.Name.Equals(System.Web.HttpContext.Current.User.Identity.Name));
         }
 
 
-        public List<Skill> GetProjectSkills()
-        {
-            return ctx.Projects.Find(1)?.Skills;
-        }
-
-        public void CreateProject(string projectName)
-        {
-            ctx.Projects.Add(new Project { Name = projectName });
-            ctx.SaveChanges();
-        }
-
-        public void AddUserToProject(string userName, int projectId)
-        {
-            ctx.UserProjects.Add(new UserProject { UserId = userName, ProjectId = projectId });
-            ctx.SaveChanges();
-        }
-
-        public void RemoveUserFromProject(string userId, int projectId)
-        {
-            ctx.UserProjects.Remove(new UserProject { UserId = userId, ProjectId = projectId });
-            ctx.SaveChanges();
-        }
-
-        public List<Project> GetProjectsByUserId(string userId)
-        {
-            var userProjects = ctx.UserProjects.Where(p => p.UserId.Equals(userId)).ToList();
-            var projects = new List<Project>();
-            foreach (var userProject in userProjects)
-            {
-                projects.Add(ctx.Projects.FirstOrDefault(p => p.Id == userProject.ProjectId));
-            }
-            return projects;
-        }
-
-        public List<Project> GetAllProjects()
-        {
-            return ctx.Projects.Take(50)?.ToList();
-        }
-
-
-        public List<TeamMember> GetTeamMembers(int projectId)
-        {
-            var authRepo = new AuthRepository();
-            var members = new List<TeamMember>();
-            var userProjects = ctx.UserProjects.Where(p => p.ProjectId == projectId);
-            foreach (var userProject in userProjects)
-            {
-                members.Add(new TeamMember
-                {
-                    Name = authRepo.FindUserById(userProject.UserId).UserName,
-                    UserId = userProject.UserId,
-                    Skills = ctx.UserSkills
-                            .Where(s => s.UserId.Equals(userProject.UserId))
-                            .Select(u => ctx.Skills.Find(u.SkillId))
-                            .ToList()
-                });
-            }
-
-            return members;
-        }
-
-        public bool SetManager(ProjectManager manager)
-        {
-            ctx.ProjectManagers.Add(manager);
-            return ctx.SaveChanges() > 0;
-        }
-
-        public List<Skill> GetAllSkills()
-        {
-            return ctx.Skills.Take(50)?.ToList();
-        }
-
+        #region Messages
         public List<ChatMessage> GetLatest()
         {
-            List<Project> projects = GetProjectsByUserId(currentUserId);
-            return ctx.ProjectMessages.Where(m => projects.Select(p => p.Id).Contains(m.GroupId)).ToList();
-        }
-
-        public int AddMessage(ChatMessage message)
-        {
-            ctx.ProjectMessages.Add(message);
-            return ctx.SaveChanges();
+            return ctx.Projects
+                .Where(p => p.Members.Select(m => m.IdentityUserId).Contains(CurrentMember.IdentityUserId))
+                    .Select(p => p.ChatMessages.OrderByDescending(m => m.DateCreated).FirstOrDefault()).ToList();
         }
 
         public List<ChatMessage> GetGroupMessages(int groupId)
         {
-            return ctx.ProjectMessages.Where(m => m.GroupId == groupId).ToList();
+            return
+                ctx.Projects.FirstOrDefault(p => p.Id == groupId)?
+                    .ChatMessages
+                    .OrderByDescending(m => m.DateCreated)
+                    .Take(50)
+                    .ToList();
+        }
+        #endregion
+
+        public List<Project> GetAllProjects()
+        {
+            return ctx.Projects.Take(50).ToList();
         }
 
-        public int Me()
+        public List<Skill> GetAllSkills()
         {
+            return ctx.Skills.Take(50).ToList();
+        }
+
+        public List<Project> GetProjectsByUserId(string userId)
+        {
+            var member = ctx.Members.FirstOrDefault(m => m.IdentityUserId.Equals(userId));
+            return ctx.Projects.Where(p => p.Members.Contains(member)).ToList();
+        }
+
+        public int CreateProject(string projectName)
+        {
+            ctx.Projects.Add(new Project { Name = projectName });
+            if (ctx.SaveChanges() > 0)
+            {
+                var project = ctx.Projects.FirstOrDefault(p => p.Name.Equals(projectName));
+                if (project.ChatMessages == null)
+                {
+                    project.ChatMessages = new List<ChatMessage>();
+                    ctx.SaveChanges();
+                }
+                SendMessage(project.Id, "Project Created " + projectName);
+            }
             return 0;
         }
 
-        public List<TaskSkill> GeTaskSkills(int taskId)
+        public int RemoveUserFromProject(string memberId, int projectId)
         {
-            return ctx.TaskSkills.Where(t => t.TaskId == taskId).ToList();
+            var project = ctx.Projects.FirstOrDefault(p => p.Id == projectId);
+            var member = ctx.Members.FirstOrDefault(m => m.IdentityUserId == memberId);
+            if (project == null || member == null) return 0;
+            project.Members.Remove(member);
+            return ctx.SaveChanges();
+        }
+
+        public int AddUserToProject(string memberId, int projectId)
+        {
+            var project = ctx.Projects.FirstOrDefault(p => p.Id == projectId);
+            var member = ctx.Members.FirstOrDefault(m => m.IdentityUserId == memberId);
+            if (project == null || member == null) return 0;
+            project.Members.Add(member);
+            return ctx.SaveChanges();
+        }
+
+        public bool SetManager(String memberId, int projectId)
+        {
+            var project = ctx.Projects.FirstOrDefault(p => p.Id == projectId);
+            var member = ctx.Members.FirstOrDefault(m => m.IdentityUserId == memberId);
+            if (project == null) throw new ArgumentException("Invalid Project Id");
+            project.ProjectManager = new ProjectManager
+            {
+                Member = member,
+                Project = project
+            };
+
+            return ctx.SaveChanges() > 0;
+        }
+
+        public int SendMessage(int groupId, string message, string attachmentUrl = null)
+        {
+            var userId = CurrentMember.IdentityUserId;
+            var project = ctx.Projects.FirstOrDefault(p=>p.Id==groupId);
+            project.ChatMessages.Add(new ChatMessage
+            {
+                DateCreated = DateTime.UtcNow,
+                Text = message,
+                AttachmentUrl = attachmentUrl,
+                MemberId = userId
+            });
+            //ctx.ChatMessages.Add(new ChatMessage
+            //{
+            //    MemberId = userId,
+            //    ProjectId = groupId,
+            //    Text = message,
+            //    DateCreated = DateTime.Now
+            //});
+            return ctx.SaveChanges();
         }
     }
 
@@ -128,12 +137,63 @@ namespace AngularJSAuthentication.API.Repositories
     {
         public DbSet<Project> Projects { get; set; }
         public DbSet<Skill> Skills { get; set; }
-        public DbSet<UserProject> UserProjects { get; set; }
-        public DbSet<Task> Tasks { get; set; }
-        public DbSet<TaskSkill> TaskSkills { get; set; }
-        public DbSet<UserSkill> UserSkills { get; set; }
-        public DbSet<ProjectManager> ProjectManagers { get; set; }
-        public DbSet<ChatMessage> ProjectMessages { get; set; }
+        public DbSet<Member> Members { get; set; }
+        //public DbSet<ChatMessage> ChatMessages { get; set; }
+
+    }
+
+    public class Member
+    {
+        [Key]
+        public string IdentityUserId { get; set; }
+        public string Name { get; set; }
+        [ForeignKey("IdentityUserId")]
+        public virtual IdentityUser IdentityUser { get; set; }
+
+        public virtual List<Skill> Skills { get; set; }
+    }
+
+    public class Skill
+    {
+        [Key]
+        public int Id { get; set; }
+
+        public string Name { get; set; }
+    }
+
+    public class UserSkill
+    {
+        [Key]
+        public int Id { get; set; }
+
+        public virtual Skill Skill { get; set; }
+    }
+
+    public class Task
+    {
+        [Key]
+        public int Id { get; set; }
+
+        public string Name { get; set; }
+
+        public virtual List<Skill> Skills { get; set; }
+
+        //public List<Member> Members { get; set; }
+    }
+
+    public class ProjectFile
+    {
+        [Key]
+        public int FileId { get; set; }
+        public string Location { get; set; }
+    }
+
+    public class ProjectManager
+    {
+        [Key, ForeignKey("Project")]
+        public int Id { get; set; }
+        public virtual Member Member { get; set; }
+        public virtual Project Project { get; set; }
     }
 
     public class Project
@@ -143,105 +203,36 @@ namespace AngularJSAuthentication.API.Repositories
 
         public string Name { get; set; }
 
-        public List<Skill> Skills { get; set; }
+        //public int ProjectManagerId { get; set; }
+        public virtual List<Task> Tasks { get; set; }
+        public virtual List<Member> Members { get; set; }
+        public virtual List<ProjectFile> ProjectFiles { get; set; }
+        public virtual List<ChatMessage> ChatMessages { get; set; }
+        //[ForeignKey("ProjectManagerId")]
+        public virtual ProjectManager ProjectManager { get; set; }
 
-    }
-
-    public class TeamMember
-    {
-        public string UserId { get; set; }
-
-        public string Name { get; set; }
-
-        public virtual Project Project { get; set; }
-        public virtual User User { get; set; }
-
-        public List<Skill> Skills { get; set; }
-    }
-
-
-    public class ProjectManager
-    {
-        public int Id { get; set; }
-        public int ProjectId { get; set; }
-
-        public string UserId { get; set; }
-        [JsonIgnore]
-        public virtual IdentityUser User { get; set; }
-        public virtual Project Project { get; set; }
-    }
-
-
-    public class UserProject
-    {
-        [Key]
-        public int Id { get; set; }
-        //[ForeignKey("UserModel")]
-        public String UserId { get; set; }
-        //[ForeignKey("Project")]
-        public int ProjectId { get; set; }
-
-    }
-
-
-    public class Skill
-    {
-        [Key]
-        public int Id { get; set; }
-        public string Name { get; set; }
-    }
-
-    public class UserSkill
-    {
-        [Key]
-        public int Id { get; set; }
-        [ForeignKey("Skill")]
-        public int SkillId { get; set; }
-
-        public string UserId { get; set; }
-
-        public virtual Skill Skill { get; set; }
-        public virtual User User { get; set; }
-    }
-
-    public class Task
-    {
-        [Key]
-        public int Id { get; set; }
-        public string Name { get; set; }
     }
 
     public class ChatMessage
     {
         [Key]
         public int Id { get; set; }
-        public string SenderId { get; set; }
-        public int GroupId { get; set; }
-
         public string Text { get; set; }
-    }
+        public string AttachmentUrl { get; set; }
+
+        // [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public DateTime DateCreated { get; set; }
 
 
-    public class TaskSkill
-    {
-        [Key]
-        public int Id { get; set; }
-        [ForeignKey("Task")]
-        public int TaskId { get; set; }
-        [ForeignKey("Skill")]
-        public int SkillId { get; set; }
+        //public int ProjectId { get; set; }
 
-        //  [JsonIgnore]
-        public virtual Task Task { get; set; }
-        // [JsonIgnore]
-        public virtual Skill Skill { get; set; }
 
-    }
+        public string MemberId { get; set; }
 
-    public class User
-    {
-        [Key]
-        public string Id { get; set; }
-        public string Name { get; set; }
+        //[ForeignKey("ProjectId")]
+        //public virtual Project Project { get; set; }
+
+        [ForeignKey("MemberId")]
+        public virtual Member Member { get; set; }
     }
 }

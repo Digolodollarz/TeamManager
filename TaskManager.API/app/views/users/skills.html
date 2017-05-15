@@ -1,0 +1,22 @@
+﻿<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-header">
+            User Skills : {{managedUser.name}}
+        </h1>
+    </div>
+    <!-- /.col-lg-12 -->
+    All User Skills :
+    <p ng-repeat="skill in managedUser.skills">{{skill.name}}</p>
+    <form class="form-inline">
+        <div class="form-group">
+            <label for="email">Create New Skill</label>
+            <input ng-model="newSkill.skillName" type="text" class="form-control">
+        </div>
+        <button ng-click="createSkill();" class="btn btn-default">Add Skill</button>
+    </form>
+    Add User Skills :
+    <p ng-repeat="skill in skills">
+        {{skill.name}}
+        <button ng-click="addUserSkill(managedUser.identityUserId,skill.id)" class="btn btn-default">Add</button>
+    </p>
+</div>
