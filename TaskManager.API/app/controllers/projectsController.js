@@ -81,7 +81,7 @@ app.controller('projectsController', ['$scope', 'projectsService', '$routeParams
         }
 
         $scope.showChat = function (message) {
-            projectsService.getMessages(message.projectId).then(function (results) {
+            projectsService.getChatMessages(message.projectId).then(function (results) {
                 $scope.chatMessages = results.data;
                 console.log("chatMessages", $scope.chatMessages);
             }, function (error) {

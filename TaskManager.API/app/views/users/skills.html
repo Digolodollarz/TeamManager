@@ -1,22 +1,45 @@
 ﻿<div class="row">
     <div class="col-lg-12">
-        <h1 class="page-header">
-            User Skills : {{managedUser.name}}
-        </h1>
+        <h2>Skill Management</h2>
     </div>
-    <!-- /.col-lg-12 -->
-    All User Skills :
-    <p ng-repeat="skill in managedUser.skills">{{skill.name}}</p>
-    <form class="form-inline">
-        <div class="form-group">
-            <label for="email">Create New Skill</label>
-            <input ng-model="newSkill.skillName" type="text" class="form-control">
+    
+    <div class="col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2>Skills held by {{managedUser.name}}</h2>
+            </div>
+            <div class="panel-body">
+                <ul class="list-group">
+                    <li class="list-group-item" ng-repeat="skill in managedUser.skills">
+                        {{skill.name}}
+                    </li>
+                </ul>
+            </div>
         </div>
-        <button ng-click="createSkill();" class="btn btn-default">Add Skill</button>
-    </form>
-    Add User Skills :
-    <p ng-repeat="skill in skills">
-        {{skill.name}}
-        <button ng-click="addUserSkill(managedUser.identityUserId,skill.id)" class="btn btn-default">Add</button>
-    </p>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2>All The Skills</h2>
+            </div>
+            <div class="panel-body">
+                <form class="form-inline">
+                    <div class="form-group">
+                        <label for="email">Create New Skill</label>
+                        <input ng-model="newSkill.skillName" type="text" class="form-control">
+                    </div>
+                    <button ng-click="createSkill();" class="btn btn-default">Add Skill</button>
+                </form>
+                <div class="list-group">
+                    <div class="list-group-item" ng-repeat="skill in skills">
+                        {{skill.name}}
+                        <button ng-click="addUserSkill(managedUser.identityUserId,skill.id)" 
+                                class="btn btn-default"> </button>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

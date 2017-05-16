@@ -12,9 +12,9 @@
             </div>
             <div class="panel-body">
                 <form class="form-inline">
-                    <div class="form-group">
+                    <div class="form-group label-floating">
                         <label>Find Project</label>
-                        <input class="form-control" type="text" value="" ng-model="newMessage" />
+                        <input placeholder="Enter Project Name" class="form-control" type="text" value="" ng-model="newMessage" />
                         <!--s<button class="btn btn-primary">Send</button>-->
                     </div>
                 </form>
@@ -31,14 +31,10 @@
                 <h2 class="panel-title">Accept Users {{allocationProject.name}}</h2>
             </div>
             <div class="panel-body">
-                <button class="btn btn-primary" ng-click="manageProductSkills=true;"
-                        ng-init="manageProductSkills=0">
-                    Add Task
-                </button>
                 <div ng-repeat="user in eligibleUsers">
-                    <span>{{user.name}}</span>
+                    <span class="lead">{{user.name}}</span>
                     <button ng-click="addUserToProject(allocationProject.id,user.identityUserId)"
-                            class="btn-default btn">
+                            class="btn-primary btn">
                         Select User
                     </button>
                 </div>
@@ -47,13 +43,23 @@
     </div>
 
     <div class="col-md-4" ng-if="allocationProject">
+        <form class="form-inline">
+            <div class="form-group label-floating">
+                <label for="newTask" class="control-label">Enter Taskname</label>
+                <input id="newTask" class="form-control" type="text" value="" ng-model="newTask" />
+                <button class="btn btn-primary btn-raised"
+                        ng-click="addTaskToProject(allocationProject.id,newTask)">
+                    Create New
+                </button>
+            </div>
+        </form>
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h2 class="panel-title">Manage Task Skills {{allocationProject.name}}</h2>
             </div>
             <div class="panel-body">
                 <div class="panel-group" id="accordion">
-                    <div class="panel panel-default" ng-repeat="task in allocationProject.tasks">
+                    <div class="panel panel-primary" ng-repeat="task in allocationProject.tasks">
                         <div class="panel-heading">
                             <h4 class="panel-title">
                                 <a href="javascript:;" data-toggle="collapse" data-parent="#accordion" data-target="#collapse{{$index}}">
@@ -62,11 +68,12 @@
                             </h4>
                         </div>
                         <div id="collapse{{$index}}" class="panel-collapse collapse in">
-                            <div class="panel-body" ng-repeat="skill in skills">
-                                <span>{{skill.name}}</span>
-                                <button ng-click="addTaskSkill(allocationProject.id,task.id, skill.id)"
-                                        class="btn-default btn">
-                                    Add Skill
+                            <div class="panel-body">
+                                <p ng-repeat="skill in task.skills">{{skill.name}}</p>
+                                <!--<span>{{skill.name}}</span>-->
+                                <button ng-repeat="skill in skills" ng-click="addTaskSkill(allocationProject.id,task.id, skill.id)"
+                                        class="btn-default btn btn-raised">
+                                    <i class="fa fa-plus" aria-hidden="true"></i> {{skill.name}}
                                 </button>
                             </div>
                         </div>
@@ -74,14 +81,7 @@
                 </div>
             </div>
         </div>
-        <form class="form-inline">
-            <div class="form-group">
-                <label>TaskName:</label>
-                <input class="form-control" type="text" value="" ng-model="newTask" />
-                <button class="btn btn-default" 
-                        ng-click="addTaskToProject(allocationProject.id,newTask)">Create</button>
-            </div>
-        </form>
+
     </div>
 
 

@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity;
 using System.Linq;
 using System.Web;
+using AngularJSAuthentication.API.Controllers;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 
@@ -29,20 +30,47 @@ namespace AngularJSAuthentication.API.Repositories
 
 
         #region Messages
-        public List<ChatMessage> GetLatest()
+        public List<ThisMessage> GetLatest()
         {
+            var projects = ctx.Projects
+                .Where(p => p.Members.Select(m => m.IdentityUserId).Contains(CurrentMember.IdentityUserId));
+            var messages = projects.Select(p => p.ChatMessages.OrderByDescending(m => m.DateCreated).FirstOrDefault())
+                .Take(50);
+
             return ctx.Projects
                 .Where(p => p.Members.Select(m => m.IdentityUserId).Contains(CurrentMember.IdentityUserId))
-                    .Select(p => p.ChatMessages.OrderByDescending(m => m.DateCreated).FirstOrDefault()).ToList();
+                    .Select(p => p.ChatMessages.OrderByDescending(m => m.DateCreated)
+                    .Select(m => new ThisMessage
+                    {
+                        DateCreated = m.DateCreated,
+                        Id = m.Id,
+                        AttachmentUrl = m.AttachmentUrl,
+                        Member = m.Member,
+                        MemberId = m.MemberId,
+                        ProjectId = p.Id,
+                        Text = m.Text
+                    })
+                    .FirstOrDefault()).Take(50)
+                    .ToList();
         }
 
-        public List<ChatMessage> GetGroupMessages(int groupId)
+        public List<ThisMessage> GetGroupMessages(int groupId)
         {
             return
                 ctx.Projects.FirstOrDefault(p => p.Id == groupId)?
                     .ChatMessages
                     .OrderByDescending(m => m.DateCreated)
                     .Take(50)
+                    .Select(m => new ThisMessage
+                    {
+                        DateCreated = m.DateCreated,
+                        Id = m.Id,
+                        AttachmentUrl = m.AttachmentUrl,
+                        Member = m.Member,
+                        MemberId = m.MemberId,
+                        ProjectId = groupId,
+                        Text = m.Text
+                    })
                     .ToList();
         }
         #endregion
@@ -114,7 +142,7 @@ namespace AngularJSAuthentication.API.Repositories
         public int SendMessage(int groupId, string message, string attachmentUrl = null)
         {
             var userId = CurrentMember.IdentityUserId;
-            var project = ctx.Projects.FirstOrDefault(p=>p.Id==groupId);
+            var project = ctx.Projects.FirstOrDefault(p => p.Id == groupId);
             project.ChatMessages.Add(new ChatMessage
             {
                 DateCreated = DateTime.UtcNow,
@@ -149,6 +177,8 @@ namespace AngularJSAuthentication.API.Repositories
         public string Name { get; set; }
         [ForeignKey("IdentityUserId")]
         public virtual IdentityUser IdentityUser { get; set; }
+
+        public virtual List<Project> Projects { get; set; }
 
         public virtual List<Skill> Skills { get; set; }
     }

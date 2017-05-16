@@ -5,27 +5,40 @@
         </h1>
     </div>
     <div class="col-md-4">
-        <h2>Messages</h2>
-        <div ng-repeat="msg in messages" ng-click="showChat(msg);">
-            <p>{{msg.memberId}}</p>
-            <p>{{msg.text}}</p>
+        <div class="panel panel-default">
+            <div class="panel-heading"><h2>Messages</h2></div>
+            <div class="panel-body">
+                <div ng-repeat="msg in messages" ng-click="showChat(msg);">
+                    <p>{{msg.memberId}}</p>
+                    <p>{{msg.text}}</p>
+                </div>
+            </div>
         </div>
     </div>
-    <div class="col-md-8" ng-if="!!chatMessages">
-        <h2>{{chatMessages[0].project.name}}</h2>
-        <div ng-repeat="message in chatMessages">
-            <p>{{message.member.name}}</p>
-            <p>{{message.text}}</p>
-        </div>
-        <form class="form-inline">
-            <div class="form-group">
-                <label></label>
-                <input type="text" value="" ng-model="newMessage" />
-                <button class="btn btn-default"
-                        ng-click="sendMessage(chatMessages[0].project.id, newMessage)">
-                    Send
-                </button>
+    <div class="col-md-8" ng-if="!!chatMessages" >
+        <div class="panel panel-primary">
+            <div class="panel-heading"><h2>{{chatMessages[0].projectId}}</h2></div>
+            <div class="panel-body">
+                <div class="list-group">
+                    <div class="list-group-item" ng-repeat="message in chatMessages">
+                        <div class="row-content">
+                            <div class="least-content">15m</div>
+                            <h4 class="list-group-item-heading">{{message.member.name}}</h4>
+                            <p class="list-group-item-text">{{message.text}}</p>
+                        </div>
+                    </div>
+                </div>
+                <form class="form-inline">
+                    <div class="form-group">
+                        <label></label>
+                        <input class="form-control" type="text" value="" ng-model="newMessage" />
+                        <button class="btn btn-default"
+                                ng-click="sendMessage(chatMessages[0].projectId, newMessage)">
+                            Send
+                        </button>
+                    </div>
+                </form>
             </div>
-        </form>
+        </div>
     </div>
 </div>

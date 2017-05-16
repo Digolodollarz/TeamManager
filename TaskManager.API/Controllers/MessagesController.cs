@@ -27,14 +27,14 @@ namespace AngularJSAuthentication.API.Controllers
 
         [Route("Chat")]
         [HttpGet]
-        public List<ChatMessage> GetForGroup(int projectId)
+        public List<ThisMessage> GetForGroup(int projectId)
         {
             return projectRepository.GetGroupMessages(projectId);
         }
 
         [Route("Latest")]
         [HttpGet]
-        public List<ChatMessage> GetLatest()
+        public List<ThisMessage> GetLatest()
         {
             return projectRepository.GetLatest();
         }
@@ -46,5 +46,16 @@ namespace AngularJSAuthentication.API.Controllers
             projectRepository.SendMessage(projectId, message);
             return BadRequest();
         }
+    }
+
+    public class ThisMessage
+    {
+        public int Id { get; set; }
+        public string Text { get; set; }
+        public string AttachmentUrl { get; set; }
+        public DateTime DateCreated { get; set; }
+        public string MemberId { get; set; }
+        public Member Member { get; set; }
+        public int ProjectId { get; set; }
     }
 }

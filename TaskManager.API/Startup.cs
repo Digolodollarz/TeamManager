@@ -7,7 +7,11 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web;
+using System.Buffers;
+//using Microsoft.AspNetCore.Mvc.Formatters;
+using Newtonsoft.Json;
 using System.Web.Http;
+using Microsoft.Extensions.DependencyInjection;
 
 [assembly: OwinStartup(typeof(AngularJSAuthentication.API.Startup))]
 
@@ -46,6 +50,18 @@ namespace AngularJSAuthentication.API
 
         }
 
-        
+        //public void ConfigureServices(IServiceCollection services)
+        //{
+        //    services.AddMvc(options =>
+        //    {
+        //        options.OutputFormatters.Clear();
+        //        options.OutputFormatters.Add(new JsonOutputFormatter(new JsonSerializerSettings()
+        //        {
+        //            ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+        //        }, ArrayPool<char>.Shared));
+        //    });
+        //}
+
+
     }
 }
